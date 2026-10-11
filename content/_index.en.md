@@ -1,7 +1,7 @@
 ---
 ---
 
-Hello👋, I am a `{full-stack}` developer, graduate, and `{designer}` who lives for enjoying a cup of tea 24/7 ☕️.
+Lorem ipsum dolor sit amet, consectetur adipisci elit, sed eiusmod tempor incidunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrum exercitationem ullam corporis suscipit laboriosam, nisi ut aliquid ex ea commodi consequatur. Quis aute iure reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint obcaecat cupiditat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.
 
 {{< cta url="/portfolio/" label="Portfolio" >}}
-{{< cta url="/contact/" label="Contact me" style="outline" >}}
+{{< cta url="" label="Contact me" style="outline" >}}

@@ -18,14 +18,14 @@
 
 [[main]]
   pre = "user-account"
-  name = "About"
+  name = "About Me"
   weight = 20
   pageRef = "about"
 
 [[main]]
   pre = "notebook"
   name = "Resume"
-  parent = "About"
+  parent = "About Me"
   weight = 30
   pageRef = "resume"
 

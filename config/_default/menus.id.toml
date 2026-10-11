@@ -12,26 +12,26 @@
 
 [[main]]
   pre = "briefcase"
-  name = "Portfolio"
+  name = "Portofolio"
   weight = 10
   pageRef = "portfolio"
 
 [[main]]
   pre = "user-account"
-  name = "About"
+  name = "Tentang Saya"
   weight = 20
   pageRef = "about"
 
 [[main]]
   pre = "notebook"
-  name = "Resume"
-  parent = "About"
+  name = "Lampiran"
+  parent = "Tentang Saya"
   weight = 30
   pageRef = "resume"
 
 [[main]]
   pre = "newspaper-clipping"
-  name = "Blogs"
+  name = "Blog"
   weight = 40
   pageRef = "posts"
 
