@@ -2,7 +2,7 @@ disabled = false
 locale = "en"
 label = "English"
 weight = 1
-title = "King Ulee"
+title = "Website Template"
 
 [params]
   displayName = "English"
@@ -15,7 +15,7 @@ title = "King Ulee"
   copyright = "© { year } Azriel Fidzlie. All rights reserved."
 
 [params.author]
-  name = "King Ulee"
+  name = "Website Template"
   email = "youremail@example.com"
   image = "img/sukri.png"
   imageQuality = 96
