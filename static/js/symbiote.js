@@ -1,6 +1,6 @@
 document.addEventListener("DOMContentLoaded", () => {
   const mark = document.createElement('div');
-  mark.style.cssText = "position: absolute; top: 30%; left: 50%; width: 200px; height: 50px; z-index: -1;";
+  mark.style.cssText = "position: absolute; top: 25%; right: 5%; width: 200px; height: 50px; z-index: -1;";
   document.body.appendChild(mark);
 
   const canvas = document.createElement('canvas');
@@ -9,29 +9,23 @@ document.addEventListener("DOMContentLoaded", () => {
 
   const clamp = (x, low, high) => Math.max(low, Math.min(high, x));
   const random = () => Math.random();
-  const rgb = (color, fallback) => {
-    const match = (color || "").match(/[\d.]+/g);
-    if (!match) return fallback;
-    const [r, g, b] = match.map(Number);
-    return Number.isFinite(b) ? [r, g, b] : fallback;
-  };
-
+  
   function creep(point, x, y, step) {
-    const dx = x - point.x;
-    const dy = y - point.y;
+    const dx = x - point.x; const dy = y - point.y;
     const distance = Math.hypot(dx, dy);
     if (distance <= step) { point.x = x; point.y = y; } 
     else { point.x += (dx / distance) * step; point.y += (dy / distance) * step; }
   }
 
-  const CELL = 4, CRAWL = 0.6, SHORT = 0.35, SPACING = 0.12, LINGER = 3;
+  // OPTIMASI 1: Menaikkan CELL dari 4 ke 6 (Mengurangi beban kalkulasi hingga 50%)
+  const CELL = 2, CRAWL = 0.8, SHORT = 0.35, SPACING = 0.12;
   const BODY = [0.17, 0.16, 0.14, 0.11, 0.09];
   const LEGS = 6, REACH = 0.6, VEINS = 40, VEIN_STEP = 0.11;
 
   function symbiote(canvas, mark) {
     const next = random;
     const unit = canvas.width / (canvas.clientWidth || 1);
-    const width = 100; // Lebar tetap agar proporsional
+    const width = 100; 
     const cell = Math.max(1, Math.round(CELL * unit));
     const nx = Math.ceil(canvas.width / cell);
     const ny = Math.ceil(canvas.height / cell);
@@ -54,15 +48,12 @@ document.addEventListener("DOMContentLoaded", () => {
     
     const veins = [], tendrils = [];
     let heading = 0, moving = 0, lastVein = { x: 0, y: 0 };
-    let lure = null, lured = -1;
     const turning = Array.from({ length: 6 }, (_, k) => ({
       orbit: 0.15 + next() * 0.08, r: 0.08 + next() * 0.045,
-      phase: (k / 6) * Math.PI * 2 + next(),
-      speed: (0.25 + next() * 0.2) * (k % 2 ? -1 : 1),
+      phase: (k / 6) * Math.PI * 2 + next(), speed: (0.25 + next() * 0.2) * (k % 2 ? -1 : 1),
     }));
     
-    const shift = new Int8Array(ny);
-    let nextTendril = 0.4, glitchUntil = -1, lastBeat = -1, sag = 0, sagSpeed = 0;
+    let nextTendril = 0.4, sag = 0, sagSpeed = 0;
     let lightX = -0.55, lightY = -0.65;
     let ink = [20, 20, 20], paper = [255, 255, 255], wasDark;
 
@@ -76,10 +67,7 @@ document.addEventListener("DOMContentLoaded", () => {
       const points = [[x, y]];
       let a = angle;
       for (let k = 0; k < steps; k++) {
-        a += (next() - 0.5) * 1.1;
-        x += Math.cos(a) * VEIN_STEP;
-        y += Math.sin(a) * VEIN_STEP;
-        points.push([x, y]);
+        a += (next() - 0.5) * 1.1; x += Math.cos(a) * VEIN_STEP; y += Math.sin(a) * VEIN_STEP; points.push([x, y]);
         if (k > 1 && k < steps - 2 && next() < 0.18 && veins.length < VEINS - 1) {
           veins.push({ points: [[x, y]], born: time + k * 0.12, life: 5 + next() * 3 });
           let bx = x, by = y, b = a + (next() < 0.5 ? 1 : -1) * (0.6 + next() * 0.5);
@@ -109,8 +97,7 @@ document.addEventListener("DOMContentLoaded", () => {
         if (pointer) {
           const distance = Math.hypot(pointer.x - head.x, pointer.y - head.y);
           const stop = Math.max(0, distance - SHORT) / (distance || 1);
-          goalX = head.x + (pointer.x - head.x) * stop;
-          goalY = head.y + (pointer.y - head.y) * stop;
+          goalX = head.x + (pointer.x - head.x) * stop; goalY = head.y + (pointer.y - head.y) * stop;
         }
         
         const inch = 0.25 + 0.75 * Math.max(0, Math.sin(time * 3.2)) ** 2;
@@ -150,15 +137,12 @@ document.addEventListener("DOMContentLoaded", () => {
         if (Math.hypot(head.x - lastVein.x, head.y - lastVein.y) > 0.18) {
           lastVein = { x: head.x, y: head.y };
           for (let k = 0; k < 2; k++) spread(time, tail.x, tail.y, heading + Math.PI + (next() - 0.5) * 2.6, 8);
-        } else if (moving < 0.3 && next() < 0.008 * step) {
-          spread(time, head.x, head.y, next() * Math.PI * 2, 6);
-        }
+        } else if (moving < 0.3 && next() < 0.008 * step) { spread(time, head.x, head.y, next() * Math.PI * 2, 6); }
 
         let target = null;
         if (pointer) {
-          const px = pointer.x - head.x, py = pointer.y - head.y;
-          const distance = Math.hypot(px, py);
-          if (distance < 1.3) target = { angle: Math.atan2(py, px), distance };
+          const distance = Math.hypot(pointer.x - head.x, pointer.y - head.y);
+          if (distance < 1.3) target = { angle: Math.atan2(pointer.y - head.y, pointer.x - head.x), distance };
         }
 
         if (time >= nextTendril) {
@@ -167,8 +151,7 @@ document.addEventListener("DOMContentLoaded", () => {
         }
 
         const shove = clamp(scroll / width, -0.3, 0.3);
-        sagSpeed += shove * 0.06;
-        sagSpeed += -sag * 0.012 * step - sagSpeed * 0.06 * step;
+        sagSpeed += shove * 0.06 - sag * 0.012 * step - sagSpeed * 0.06 * step;
         sag = clamp(sag + sagSpeed * step, -0.12, 0.12);
 
         const leanX = target ? Math.cos(target.angle) * 0.06 : 0;
@@ -176,42 +159,26 @@ document.addEventListener("DOMContentLoaded", () => {
         const lobes = [{ x: 0, y: sag * 0.3, r: 0.16 }];
         
         for (let k = 1; k < body.length; k++) {
-          const ahead = body[k - 1], round = body[k];
-          const stretch = clamp(Math.hypot(ahead.x - round.x, ahead.y - round.y) / SPACING, 0, 1);
-          if (stretch > 0.05) {
-            lobes.push({
-              x: round.x - head.x + Math.sin(time * 2 + k) * 0.012,
-              y: round.y - head.y + sag * 0.4,
-              r: BODY[k] * stretch * (1 + 0.05 * Math.sin(time * 3.2 - k * 0.6))
-            });
-          }
+          const stretch = clamp(Math.hypot(body[k-1].x - body[k].x, body[k-1].y - body[k].y) / SPACING, 0, 1);
+          if (stretch > 0.05) lobes.push({ x: body[k].x - head.x + Math.sin(time * 2 + k) * 0.012, y: body[k].y - head.y + sag * 0.4, r: BODY[k] * stretch * (1 + 0.05 * Math.sin(time * 3.2 - k * 0.6)) });
         }
         for (const [k, lobe] of turning.entries()) {
-          const angle = lobe.phase + time * lobe.speed;
-          const orbit = lobe.orbit * (1 + 0.3 * Math.sin(time * 0.5 + k));
+          const angle = lobe.phase + time * lobe.speed, orbit = lobe.orbit * (1 + 0.3 * Math.sin(time * 0.5 + k));
           lobes.push({ x: Math.cos(angle) * orbit + leanX, y: Math.sin(angle) * orbit + leanY + sag * (0.6 + k * 0.15), r: lobe.r });
         }
 
         const chains = [];
         for (let i = tendrils.length - 1; i >= 0; i--) {
-          const t = tendrils[i];
-          const age = (time - t.born) / t.life;
+          const t = tendrils[i], age = (time - t.born) / t.life;
           if (age > 1) { tendrils.splice(i, 1); continue; }
           const out = Math.sin(Math.PI * age) ** 0.55;
           let length = t.length;
-          if (target) {
-            t.angle += Math.atan2(Math.sin(target.angle - t.angle), Math.cos(target.angle - t.angle)) * 0.08;
-            length = clamp(target.distance - 0.05, 0.15, 0.75);
-          }
-          const dx = Math.cos(t.angle), dy = Math.sin(t.angle);
-          const chain = [];
+          if (target) { t.angle += Math.atan2(Math.sin(target.angle - t.angle), Math.cos(target.angle - t.angle)) * 0.08; length = clamp(target.distance - 0.05, 0.15, 0.75); }
+          const dx = Math.cos(t.angle), dy = Math.sin(t.angle), chain = [];
           let px = 0, py = 0;
           for (let k = 0; k <= 12; k++) {
-            const q = k / 12;
-            const along = 0.1 + q * length * out;
-            const off = t.curl * Math.sin(q * 3.2 + time * 5) * q * 0.11 * out;
-            const x = dx * along - dy * off, y = dy * along + dx * off;
-            const r = (0.085 * (1 - q) ** 1.2 + 0.014) * (0.45 + 0.55 * out);
+            const q = k / 12, along = 0.1 + q * length * out, off = t.curl * Math.sin(q * 3.2 + time * 5) * q * 0.11 * out;
+            const x = dx * along - dy * off, y = dy * along + dx * off, r = (0.085 * (1 - q) ** 1.2 + 0.014) * (0.45 + 0.55 * out);
             if (k) chain.push([px, py, x, y, r]);
             px = x; py = y;
           }
@@ -219,14 +186,12 @@ document.addEventListener("DOMContentLoaded", () => {
         }
 
         for (const [k, leg] of legs.entries()) {
-          const dx = leg.x - head.x, dy = leg.y - head.y;
-          const length = Math.hypot(dx, dy) || 1;
+          const dx = leg.x - head.x, dy = leg.y - head.y, length = Math.hypot(dx, dy) || 1;
           const bend = Math.sin(time * 2.5 + k) * 0.04 + (leg.lift < 1 ? Math.sin(leg.lift * Math.PI) * 0.12 : 0);
           const chain = [];
           let px = 0, py = 0;
           for (let j = 1; j <= 8; j++) {
-            const q = j / 8;
-            const off = Math.sin(q * Math.PI) * bend;
+            const q = j / 8, off = Math.sin(q * Math.PI) * bend;
             const x = dx * q - (dy / length) * off, y = dy * q + (dx / length) * off;
             chain.push([px, py, x, y, 0.09 - 0.065 * q]);
             px = x; py = y;
@@ -236,39 +201,58 @@ document.addEventListener("DOMContentLoaded", () => {
         }
 
         for (let i = veins.length - 1; i >= 0; i--) {
-          const v = veins[i];
-          const age = time - v.born;
+          const v = veins[i], age = time - v.born;
           if (age > v.life) { veins.splice(i, 1); continue; }
           if (age < 0) continue;
-          const shown = Math.max(2, Math.ceil(v.points.length * Math.min(1, age / 1.2)));
-          const fade = 1 - Math.max(0, (age - v.life * 0.6) / (v.life * 0.4));
-          const chain = [];
+          const shown = Math.max(2, Math.ceil(v.points.length * Math.min(1, age / 1.2))), fade = 1 - Math.max(0, (age - v.life * 0.6) / (v.life * 0.4)), chain = [];
           for (let j = 1; j < shown; j++) {
-            const q = j / (v.points.length - 1);
-            const [ax, ay] = v.points[j - 1], [bx, by] = v.points[j];
+            const q = j / (v.points.length - 1), [ax, ay] = v.points[j - 1], [bx, by] = v.points[j];
             chain.push([ax - head.x, ay - head.y, bx - head.x, by - head.y, (0.045 - 0.025 * q) * fade]);
           }
           if (chain.length) chains.push(chain);
         }
 
+        // OPTIMASI 2: Bounding Box (Menghitung area kotak di sekitar symbiote saja)
+        let left = Infinity, right = -Infinity, top = Infinity, bottom = -Infinity;
+        const cover = (x, y) => { left = Math.min(left, x); right = Math.max(right, x); top = Math.min(top, y); bottom = Math.max(bottom, y); };
+
         const balls = lobes.map((l) => [hx + l.x * span, hy + l.y * span, (l.r * span) ** 2]);
-        const segments = chains.map((chain) =>
-          chain.map(([ax, ay, bx, by, r]) => {
+        for (const [bx, by] of balls) cover(bx, by);
+
+        const bounds = chains.map((chain) => {
+          let reach = 0, l = Infinity, r = -Infinity, t = Infinity, b = -Infinity;
+          for (const [ax, ay, bx, by, rad] of chain) {
+            const px = hx + ax * span, py = hy + ay * span, vx = (bx - ax) * span, vy = (by - ay) * span;
+            reach = Math.max(reach, rad * span * 3 + 1);
+            l = Math.min(l, px, px + vx); r = Math.max(r, px, px + vx);
+            t = Math.min(t, py, py + vy); b = Math.max(b, py, py + vy);
+          }
+          cover(l - reach, t - reach); cover(r + reach, b + reach);
+          return [l - reach, r + reach, t - reach, b + reach];
+        });
+
+        const segments = chains.map((chain) => chain.map(([ax, ay, bx, by, r]) => {
             const vx = (bx - ax) * span, vy = (by - ay) * span;
             return [hx + ax * span, hy + ay * span, vx, vy, vx * vx + vy * vy || 1e-6, (r * span) ** 2];
-          })
-        );
+        }));
 
-        field.fill(0);
-        for (let y = 0; y < ny; y++) {
-          for (let x = 0; x < nx; x++) {
+        const margin = span * 0.45 + 4;
+        const x0 = Math.max(1, Math.floor(left - margin)), x1 = Math.min(nx - 1, Math.ceil(right + margin));
+        const y0 = Math.max(1, Math.floor(top - margin)), y1 = Math.min(ny - 1, Math.ceil(bottom + margin));
+
+        field.fill(0); // Membersihkan area sisa
+        
+        // Loop rendering HANYA pada area kotak Bounding Box (Sangat menghemat CPU)
+        for (let y = y0 - 1; y <= y1; y++) {
+          for (let x = x0 - 1; x <= x1; x++) {
             const X = x + 0.5, Y = y + 0.5;
             let sum = 0;
             for (const [bx, by, rr] of balls) {
-              const dx = X - bx, dy = Y - by;
-              sum += rr / (dx * dx + dy * dy + 0.01);
+              const dx = X - bx, dy = Y - by; sum += rr / (dx * dx + dy * dy + 0.01);
             }
-            for (const chain of segments) {
+            for (const [k, chain] of segments.entries()) {
+              const [l, r, t, b] = bounds[k];
+              if (X < l || X > r || Y < t || Y > b) continue; // Skip piksel kosong di luar kaki/sulur
               let most = 0;
               for (const [ax, ay, vx, vy, vv, rr] of chain) {
                 const h = clamp(((X - ax) * vx + (Y - ay) * vy) / vv, 0, 1);
@@ -283,24 +267,22 @@ document.addEventListener("DOMContentLoaded", () => {
 
         const wantX = target ? clamp(Math.cos(target.angle), -0.9, 0.9) : -0.55;
         const wantY = target ? clamp(Math.sin(target.angle), -0.9, 0.9) : -0.65;
-        lightX += (wantX - lightX) * Math.min(1, 0.06 * step);
-        lightY += (wantY - lightY) * Math.min(1, 0.06 * step);
+        lightX += (wantX - lightX) * Math.min(1, 0.06 * step); lightY += (wantY - lightY) * Math.min(1, 0.06 * step);
         const lz = 0.75, ll = Math.hypot(lightX, lightY, lz);
         const wx = lightX / ll, wy = lightY / ll, wz = lz / ll + 1, hl = Math.hypot(wx, wy, wz);
-        const height = (v) => (v > 1 ? 1 - Math.exp(-(v - 1) * 1.4) : 0);
-        const slope = span * 0.28;
+        const height = (v) => (v > 1 ? 1 - Math.exp(-(v - 1) * 1.4) : 0), slope = span * 0.28;
         const toward = (amount) => ink.map((c, k) => c + (paper[k] - c) * amount);
         const mid = toward(0.35), glint = toward(0.95);
 
         pixels.fill(0);
-        for (let y = 1; y < ny - 1; y++) {
-          for (let x = 1; x < nx - 1; x++) {
+        // Terapkan warna hanya di area Bounding Box
+        for (let y = y0; y < y1; y++) {
+          for (let x = x0; x < x1; x++) {
             const at = x + y * nx;
             if (field[at] <= 1) continue;
             const sx = -(height(field[at + 1]) - height(field[at - 1])) * slope;
             const sy = -(height(field[at + nx]) - height(field[at - nx])) * slope;
-            const sl = Math.hypot(sx, sy, 1);
-            const facing = Math.max(0, (sx * wx + sy * wy + wz) / (sl * hl));
+            const facing = Math.max(0, (sx * wx + sy * wy + wz) / (Math.hypot(sx, sy, 1) * hl));
             const gloss = facing ** 70 * 0.95 + facing ** 14 * 0.1;
             const tone = gloss > 0.45 ? glint : gloss > 0.12 ? mid : ink;
             const p = at * 4;
@@ -322,18 +304,32 @@ document.addEventListener("DOMContentLoaded", () => {
 
   const ctx = canvas.getContext('2d');
   let currentInst = symbiote(canvas, mark);
-  let pointer = { x: window.innerWidth / 2, y: window.innerHeight / 2 };
+  let pointer = null; // Dibuat null agar posisi defaultnya diam di mark (posisi awal)
   let lastTime = performance.now();
   let lastScroll = window.scrollY;
+  let idleTimeout;
 
-  window.addEventListener('mousemove', (e) => { pointer.x = e.clientX; pointer.y = e.clientY; });
+  // Melacak kursor saat bergerak di dalam layar
+  window.addEventListener('mousemove', (e) => { 
+    pointer = { x: e.clientX, y: e.clientY }; 
+    
+    // (Opsional) Fitur tambahan: Symbiote otomatis pulang jika mouse diam selama 3 detik
+    clearTimeout(idleTimeout);
+    idleTimeout = setTimeout(() => {
+      pointer = null;
+    }, 3000); // 3000 milidetik = 3 detik
+  });
+
+  // Melacak saat kursor benar-benar keluar dari jendela browser
+  document.addEventListener('mouseleave', () => { 
+    pointer = null; 
+  });
 
   function animate(currentTime) {
     const delta = (currentTime - lastTime) / 1000;
     lastTime = currentTime;
     const isDark = document.documentElement.classList.contains('dark');
     
-    // Hitung kecepatan scroll untuk efek deformasi
     const currentScroll = window.scrollY;
     const scrollDelta = currentScroll - lastScroll;
     lastScroll = currentScroll;
@@ -341,22 +337,14 @@ document.addEventListener("DOMContentLoaded", () => {
     const originRect = mark.getBoundingClientRect();
 
     currentInst.frame({
-      ctx: ctx,
-      time: currentTime / 1000,
-      delta: Math.min(delta, 0.1), // Cegah glitch jika tab tidak aktif
-      dark: isDark,
-      scroll: scrollDelta,
+      ctx: ctx, time: currentTime / 1000, delta: Math.min(delta, 0.1), dark: isDark, scroll: scrollDelta,
       origin: { x: originRect.left + originRect.width/2, y: originRect.top + originRect.height/2 },
-      pointer: pointer,
-      width: canvas.width,
-      height: canvas.height
+      pointer: pointer, width: canvas.width, height: canvas.height
     });
 
     requestAnimationFrame(animate);
   }
   
-  // Re-init canvas jika resolusi layar berubah drastis
   window.addEventListener('resize', () => { currentInst = symbiote(canvas, mark); });
-  
   requestAnimationFrame(animate);
 });
