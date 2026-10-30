@@ -17,8 +17,7 @@ document.addEventListener("DOMContentLoaded", () => {
     else { point.x += (dx / distance) * step; point.y += (dy / distance) * step; }
   }
 
-  // OPTIMASI 1: Menaikkan CELL dari 4 ke 6 (Mengurangi beban kalkulasi hingga 50%)
-  const CELL = 2, CRAWL = 0.8, SHORT = 0.35, SPACING = 0.12;
+  const CELL = 2, CRAWL = 0.6, SHORT = 0.35, SPACING = 0.12;
   const BODY = [0.17, 0.16, 0.14, 0.11, 0.09];
   const LEGS = 6, REACH = 0.6, VEINS = 40, VEIN_STEP = 0.11;
 
@@ -212,7 +211,6 @@ document.addEventListener("DOMContentLoaded", () => {
           if (chain.length) chains.push(chain);
         }
 
-        // OPTIMASI 2: Bounding Box (Menghitung area kotak di sekitar symbiote saja)
         let left = Infinity, right = -Infinity, top = Infinity, bottom = -Infinity;
         const cover = (x, y) => { left = Math.min(left, x); right = Math.max(right, x); top = Math.min(top, y); bottom = Math.max(bottom, y); };
 
@@ -240,9 +238,8 @@ document.addEventListener("DOMContentLoaded", () => {
         const x0 = Math.max(1, Math.floor(left - margin)), x1 = Math.min(nx - 1, Math.ceil(right + margin));
         const y0 = Math.max(1, Math.floor(top - margin)), y1 = Math.min(ny - 1, Math.ceil(bottom + margin));
 
-        field.fill(0); // Membersihkan area sisa
+        field.fill(0);
         
-        // Loop rendering HANYA pada area kotak Bounding Box (Sangat menghemat CPU)
         for (let y = y0 - 1; y <= y1; y++) {
           for (let x = x0 - 1; x <= x1; x++) {
             const X = x + 0.5, Y = y + 0.5;
@@ -252,7 +249,7 @@ document.addEventListener("DOMContentLoaded", () => {
             }
             for (const [k, chain] of segments.entries()) {
               const [l, r, t, b] = bounds[k];
-              if (X < l || X > r || Y < t || Y > b) continue; // Skip piksel kosong di luar kaki/sulur
+              if (X < l || X > r || Y < t || Y > b) continue;
               let most = 0;
               for (const [ax, ay, vx, vy, vv, rr] of chain) {
                 const h = clamp(((X - ax) * vx + (Y - ay) * vy) / vv, 0, 1);
@@ -275,7 +272,6 @@ document.addEventListener("DOMContentLoaded", () => {
         const mid = toward(0.35), glint = toward(0.95);
 
         pixels.fill(0);
-        // Terapkan warna hanya di area Bounding Box
         for (let y = y0; y < y1; y++) {
           for (let x = x0; x < x1; x++) {
             const at = x + y * nx;
@@ -304,16 +300,14 @@ document.addEventListener("DOMContentLoaded", () => {
 
   const ctx = canvas.getContext('2d');
   let currentInst = symbiote(canvas, mark);
-  let pointer = null; // Dibuat null agar posisi defaultnya diam di mark (posisi awal)
+  let pointer = null; 
   let lastTime = performance.now();
   let lastScroll = window.scrollY;
 
-  // Melacak kursor saat bergerak di dalam layar
   window.addEventListener('mousemove', (e) => { 
     pointer = { x: e.clientX, y: e.clientY }; 
   });
 
-  // Melacak saat kursor benar-benar keluar dari jendela browser
   document.addEventListener('mouseleave', () => { 
     pointer = null; 
   });
