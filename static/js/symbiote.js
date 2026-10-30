@@ -307,17 +307,10 @@ document.addEventListener("DOMContentLoaded", () => {
   let pointer = null; // Dibuat null agar posisi defaultnya diam di mark (posisi awal)
   let lastTime = performance.now();
   let lastScroll = window.scrollY;
-  let idleTimeout;
 
   // Melacak kursor saat bergerak di dalam layar
   window.addEventListener('mousemove', (e) => { 
     pointer = { x: e.clientX, y: e.clientY }; 
-    
-    // (Opsional) Fitur tambahan: Symbiote otomatis pulang jika mouse diam selama 3 detik
-    clearTimeout(idleTimeout);
-    idleTimeout = setTimeout(() => {
-      pointer = null;
-    }, 3000); // 3000 milidetik = 3 detik
   });
 
   // Melacak saat kursor benar-benar keluar dari jendela browser
