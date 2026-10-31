@@ -7,7 +7,9 @@ function initSymbiote() {
 
   const mark = document.createElement('div');
   mark.id = 'symbiote-mark';
-  mark.style.cssText = "position: absolute; top: 25%; right: 5%; width: 200px; height: 50px; z-index: -1;";
+  const markLeft = Math.random() * Math.max(0, window.innerWidth - 200);
+  const markTop = Math.random() * Math.max(0, window.innerHeight - 50);
+  mark.style.cssText = `position: fixed; top: ${markTop}px; left: ${markLeft}px; width: 200px; height: 50px; z-index: -1;`;
   document.body.appendChild(mark);
 
   const canvas = document.createElement('canvas');
