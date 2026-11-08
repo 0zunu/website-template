@@ -1,6 +1,6 @@
 {{ $clientImages := resources.Match "img/clients/*.webp" }}
 {{ if $clientImages }}
-<section class="mt-12 mb-10 w-full" aria-labelledby="trusted-heading">
+<section class="mt-6 mb-10 w-full" aria-labelledby="trusted-heading">
 
   {{ if eq (len $clientImages) 1 }}
     <div class="flex justify-center pb-4">
@@ -8,7 +8,7 @@
         <img
           src="{{ .RelPermalink }}"
           alt="Client"
-          class="h-12 w-auto select-none object-contain opacity-50 brightness-0 transition-all duration-300 hover:opacity-100 dark:invert"
+          class="h-12 w-auto select-none object-contain brightness-0 dark:invert"
           draggable="false" />
       {{ end }}
     </div>
@@ -27,7 +27,7 @@
               <img
                 src="{{ $clientImage.RelPermalink }}"
                 alt="Client {{ add $index 1 }}"
-                class="h-12 w-auto select-none object-contain opacity-50 brightness-0 transition-all duration-300 hover:opacity-100 dark:invert"
+                class="h-12 w-auto select-none object-contain brightness-0 dark:invert"
                 draggable="false" />
             </div>
           {{ end }}
@@ -38,7 +38,7 @@
               <img
                 src="{{ $clientImage.RelPermalink }}"
                 alt=""
-                class="h-12 w-auto select-none object-contain opacity-50 brightness-0 transition-all duration-300 hover:opacity-100 dark:invert"
+                class="h-12 w-auto select-none object-contain brightness-0 dark:invert"
                 draggable="false" />
             </div>
           {{ end }}
