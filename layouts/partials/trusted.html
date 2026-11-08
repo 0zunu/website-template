@@ -3,12 +3,12 @@
 <section class="mt-6 mb-10 w-full" aria-labelledby="trusted-heading">
 
   {{ if eq (len $clientImages) 1 }}
-    <div class="flex justify-center pb-4">
+    <div class="w-full pb-4">
       {{ range $clientImages }}
         <img
           src="{{ .RelPermalink }}"
           alt="Client"
-          class="h-12 w-auto select-none object-contain brightness-0 dark:invert"
+          class="mx-auto block h-12 w-auto select-none object-contain brightness-0 dark:invert"
           draggable="false" />
       {{ end }}
     </div>
@@ -20,24 +20,13 @@
       aria-label="Client logos"
       tabindex="0"
       style="scrollbar-width: none;">
-      <div class="flex w-max">
-        <div data-client-group class="flex items-center gap-64 pr-20">
+      <div class="flex w-max min-w-full justify-center">
+        <div data-client-group class="flex flex-none items-center gap-64 pr-20">
           {{ range $index, $clientImage := $clientImages }}
             <div class="flex h-16 flex-none items-center justify-center px-3">
               <img
                 src="{{ $clientImage.RelPermalink }}"
                 alt="Client {{ add $index 1 }}"
-                class="h-12 w-auto select-none object-contain brightness-0 dark:invert"
-                draggable="false" />
-            </div>
-          {{ end }}
-        </div>
-        <div data-client-group class="flex items-center gap-64 pr-20" aria-hidden="true">
-          {{ range $clientImage := $clientImages }}
-            <div class="flex h-16 flex-none items-center justify-center px-3">
-              <img
-                src="{{ $clientImage.RelPermalink }}"
-                alt=""
                 class="h-12 w-auto select-none object-contain brightness-0 dark:invert"
                 draggable="false" />
             </div>
@@ -49,33 +38,12 @@
     <script>
       (() => {
         const ticker = document.getElementById("client-swiper");
-        const firstGroup = ticker?.querySelector("[data-client-group]");
-        if (!ticker || !firstGroup) return;
+        if (!ticker) return;
 
         let pointerStartX = 0;
         let scrollStart = 0;
         let activePointer = null;
-        let isHovered = false;
 
-        function animate() {
-          const loopWidth = firstGroup.getBoundingClientRect().width;
-          if (!activePointer && !isHovered && loopWidth > 0) {
-            ticker.scrollLeft += 1;
-            if (ticker.scrollLeft >= loopWidth) {
-              ticker.scrollLeft -= loopWidth;
-            }
-          }
-          requestAnimationFrame(animate);
-        }
-
-        ticker.addEventListener("pointerenter", (event) => {
-          if (event.pointerType === "touch") return;
-          isHovered = true;
-        });
-        ticker.addEventListener("pointerleave", (event) => {
-          if (event.pointerType === "touch") return;
-          isHovered = false;
-        });
         ticker.addEventListener("pointerdown", (event) => {
           if (event.pointerType !== "mouse") return;
           activePointer = event.pointerId;
@@ -93,17 +61,6 @@
         };
         ticker.addEventListener("pointerup", stopDragging);
         ticker.addEventListener("pointercancel", stopDragging);
-        ticker.addEventListener("touchstart", () => {
-          isHovered = true;
-        }, { passive: true });
-        ticker.addEventListener("touchend", () => {
-          isHovered = false;
-        }, { passive: true });
-        ticker.addEventListener("touchcancel", () => {
-          isHovered = false;
-        }, { passive: true });
-
-        requestAnimationFrame(animate);
       })();
     </script>
   {{ end }}
