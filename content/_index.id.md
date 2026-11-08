@@ -6,3 +6,5 @@ Lorem ipsum dolor sit amet, consectetur adipisci elit, sed eiusmod tempor incidu
 {{< cta url="/portfolio/" label="Portofolio" >}}
 &nbsp;
 {{< cta url="" label="Hubungi saya" style="outline" >}}
+
+{{< trusted >}}

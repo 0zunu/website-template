@@ -6,3 +6,5 @@ Lorem ipsum dolor sit amet, consectetur adipisci elit, sed eiusmod tempor incidu
 {{< cta url="/portfolio/" label="Portfolio" >}}
 &nbsp;
 {{< cta url="" label="Contact me" style="outline" >}}
+
+{{< trusted >}}
