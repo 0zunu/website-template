@@ -1,104 +1,111 @@
 {{ $clientImages := resources.Match "img/clients/*.webp" }}
 {{ if $clientImages }}
-<section class="mt-16 mb-10 w-full" aria-labelledby="trusted-heading">
-  <h2
-    id="trusted-heading"
-    class="mb-10 text-center text-sm font-semibold uppercase tracking-widest text-neutral-500 dark:text-neutral-400">
-    Trusted By Forward-Thinking Teams and Studios
-  </h2>
+<section class="mt-12 mb-10 w-full" aria-labelledby="trusted-heading">
 
-  <div
-    id="client-swiper"
-    class="cursor-grab overflow-x-auto pb-4 active:cursor-grabbing touch-pan-x"
-    role="region"
-    aria-label="Client logos"
-    tabindex="0"
-    style="scrollbar-width: none;">
-    <div class="flex w-max">
-      <div data-client-group class="flex items-center gap-20 pr-20">
-        {{ range $index, $clientImage := $clientImages }}
-          <div class="flex h-6 flex-none items-center justify-center">
-            <img
-              src="{{ $clientImage.RelPermalink }}"
-              alt="Client {{ add $index 1 }}"
-              class="h-12 w-auto select-none object-contain opacity-50 grayscale transition-all duration-300 hover:opacity-100 hover:grayscale-0 dark:invert"
-              draggable="false" />
-          </div>
-        {{ end }}
-      </div>
-      <div data-client-group class="flex items-center gap-20 pr-20" aria-hidden="true">
-        {{ range $clientImage := $clientImages }}
-          <div class="flex h-6 flex-none items-center justify-center">
-            <img
-              src="{{ $clientImage.RelPermalink }}"
-              alt=""
-              class="h-12 w-auto select-none object-contain opacity-50 grayscale transition-all duration-300 hover:opacity-100 hover:grayscale-0 dark:invert"
-              draggable="false" />
-          </div>
-        {{ end }}
+  {{ if eq (len $clientImages) 1 }}
+    <div class="flex justify-center pb-4">
+      {{ range $clientImages }}
+        <img
+          src="{{ .RelPermalink }}"
+          alt="Client"
+          class="h-12 w-auto select-none object-contain opacity-50 grayscale transition-all duration-300 hover:opacity-100 hover:grayscale-0 dark:invert"
+          draggable="false" />
+      {{ end }}
+    </div>
+  {{ else }}
+    <div
+      id="client-swiper"
+      class="cursor-grab overflow-x-auto pb-4 active:cursor-grabbing touch-pan-x"
+      role="region"
+      aria-label="Client logos"
+      tabindex="0"
+      style="scrollbar-width: none;">
+      <div class="flex w-max">
+        <div data-client-group class="flex items-center gap-20 pr-20">
+          {{ range $index, $clientImage := $clientImages }}
+            <div class="flex h-6 flex-none items-center justify-center">
+              <img
+                src="{{ $clientImage.RelPermalink }}"
+                alt="Client {{ add $index 1 }}"
+                class="h-12 w-auto select-none object-contain opacity-50 grayscale transition-all duration-300 hover:opacity-100 hover:grayscale-0 dark:invert"
+                draggable="false" />
+            </div>
+          {{ end }}
+        </div>
+        <div data-client-group class="flex items-center gap-20 pr-20" aria-hidden="true">
+          {{ range $clientImage := $clientImages }}
+            <div class="flex h-6 flex-none items-center justify-center">
+              <img
+                src="{{ $clientImage.RelPermalink }}"
+                alt=""
+                class="h-12 w-auto select-none object-contain opacity-50 grayscale transition-all duration-300 hover:opacity-100 hover:grayscale-0 dark:invert"
+                draggable="false" />
+            </div>
+          {{ end }}
+        </div>
       </div>
     </div>
-  </div>
-</section>
 
-<script>
-  (() => {
-    const ticker = document.getElementById("client-swiper");
-    const firstGroup = ticker?.querySelector("[data-client-group]");
-    if (!ticker || !firstGroup) return;
+    <script>
+      (() => {
+        const ticker = document.getElementById("client-swiper");
+        const firstGroup = ticker?.querySelector("[data-client-group]");
+        if (!ticker || !firstGroup) return;
 
-    let pointerStartX = 0;
-    let scrollStart = 0;
-    let activePointer = null;
-    let isHovered = false;
+        let pointerStartX = 0;
+        let scrollStart = 0;
+        let activePointer = null;
+        let isHovered = false;
 
-    function animate() {
-      const loopWidth = firstGroup.getBoundingClientRect().width;
-      if (!activePointer && !isHovered && loopWidth > 0) {
-        ticker.scrollLeft += 1;
-        if (ticker.scrollLeft >= loopWidth) {
-          ticker.scrollLeft -= loopWidth;
+        function animate() {
+          const loopWidth = firstGroup.getBoundingClientRect().width;
+          if (!activePointer && !isHovered && loopWidth > 0) {
+            ticker.scrollLeft += 1;
+            if (ticker.scrollLeft >= loopWidth) {
+              ticker.scrollLeft -= loopWidth;
+            }
+          }
+          requestAnimationFrame(animate);
         }
-      }
-      requestAnimationFrame(animate);
-    }
 
-    ticker.addEventListener("pointerenter", (event) => {
-      if (event.pointerType === "touch") return;
-      isHovered = true;
-    });
-    ticker.addEventListener("pointerleave", (event) => {
-      if (event.pointerType === "touch") return;
-      isHovered = false;
-    });
-    ticker.addEventListener("pointerdown", (event) => {
-      if (event.pointerType !== "mouse") return;
-      activePointer = event.pointerId;
-      pointerStartX = event.clientX;
-      scrollStart = ticker.scrollLeft;
-      ticker.setPointerCapture(event.pointerId);
-    });
-    ticker.addEventListener("pointermove", (event) => {
-      if (event.pointerId === activePointer) {
-        ticker.scrollLeft = scrollStart - (event.clientX - pointerStartX);
-      }
-    });
-    const stopDragging = (event) => {
-      if (event.pointerId === activePointer) activePointer = null;
-    };
-    ticker.addEventListener("pointerup", stopDragging);
-    ticker.addEventListener("pointercancel", stopDragging);
-    ticker.addEventListener("touchstart", () => {
-      isHovered = true;
-    }, { passive: true });
-    ticker.addEventListener("touchend", () => {
-      isHovered = false;
-    }, { passive: true });
-    ticker.addEventListener("touchcancel", () => {
-      isHovered = false;
-    }, { passive: true });
+        ticker.addEventListener("pointerenter", (event) => {
+          if (event.pointerType === "touch") return;
+          isHovered = true;
+        });
+        ticker.addEventListener("pointerleave", (event) => {
+          if (event.pointerType === "touch") return;
+          isHovered = false;
+        });
+        ticker.addEventListener("pointerdown", (event) => {
+          if (event.pointerType !== "mouse") return;
+          activePointer = event.pointerId;
+          pointerStartX = event.clientX;
+          scrollStart = ticker.scrollLeft;
+          ticker.setPointerCapture(event.pointerId);
+        });
+        ticker.addEventListener("pointermove", (event) => {
+          if (event.pointerId === activePointer) {
+            ticker.scrollLeft = scrollStart - (event.clientX - pointerStartX);
+          }
+        });
+        const stopDragging = (event) => {
+          if (event.pointerId === activePointer) activePointer = null;
+        };
+        ticker.addEventListener("pointerup", stopDragging);
+        ticker.addEventListener("pointercancel", stopDragging);
+        ticker.addEventListener("touchstart", () => {
+          isHovered = true;
+        }, { passive: true });
+        ticker.addEventListener("touchend", () => {
+          isHovered = false;
+        }, { passive: true });
+        ticker.addEventListener("touchcancel", () => {
+          isHovered = false;
+        }, { passive: true });
 
-    requestAnimationFrame(animate);
-  })();
-</script>
+        requestAnimationFrame(animate);
+      })();
+    </script>
+  {{ end }}
+</section>
 {{ end }}
