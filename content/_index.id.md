@@ -7,6 +7,6 @@ Lorem ipsum dolor sit amet, consectetur adipisci elit, sed eiusmod tempor incidu
 &nbsp;
 {{< cta url="" label="Hubungi saya" style="outline" >}}
 
-### Trusted By Forward-Thinking Teams and Studios
+### Dipercaya oleh Perusahaan dan Instansi
 
 {{< trusted >}}

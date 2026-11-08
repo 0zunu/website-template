@@ -7,6 +7,6 @@ Lorem ipsum dolor sit amet, consectetur adipisci elit, sed eiusmod tempor incidu
 &nbsp;
 {{< cta url="" label="Contact me" style="outline" >}}
 
-### Trusted By Forward-Thinking Teams and Studios
+### Trusted by Companies and Agencies
 
 {{< trusted >}}
