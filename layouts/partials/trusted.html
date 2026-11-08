@@ -23,7 +23,7 @@
       <div class="flex w-max">
         <div data-client-group class="flex items-center gap-64 pr-20">
           {{ range $index, $clientImage := $clientImages }}
-            <div class="flex h-6 flex-none items-center justify-center">
+            <div class="flex h-16 flex-none items-center justify-center px-3">
               <img
                 src="{{ $clientImage.RelPermalink }}"
                 alt="Client {{ add $index 1 }}"
@@ -34,7 +34,7 @@
         </div>
         <div data-client-group class="flex items-center gap-64 pr-20" aria-hidden="true">
           {{ range $clientImage := $clientImages }}
-            <div class="flex h-6 flex-none items-center justify-center">
+            <div class="flex h-16 flex-none items-center justify-center px-3">
               <img
                 src="{{ $clientImage.RelPermalink }}"
                 alt=""
