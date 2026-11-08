@@ -8,7 +8,7 @@
         <img
           src="{{ .RelPermalink }}"
           alt="Client"
-          class="h-12 w-auto select-none object-contain opacity-50 grayscale transition-all duration-300 hover:opacity-100 hover:grayscale-0 dark:invert"
+          class="h-12 w-auto select-none object-contain opacity-50 brightness-0 transition-all duration-300 hover:opacity-100 dark:invert"
           draggable="false" />
       {{ end }}
     </div>
@@ -21,24 +21,24 @@
       tabindex="0"
       style="scrollbar-width: none;">
       <div class="flex w-max">
-        <div data-client-group class="flex items-center gap-20 pr-20">
+        <div data-client-group class="flex items-center gap-64 pr-20">
           {{ range $index, $clientImage := $clientImages }}
             <div class="flex h-6 flex-none items-center justify-center">
               <img
                 src="{{ $clientImage.RelPermalink }}"
                 alt="Client {{ add $index 1 }}"
-                class="h-12 w-auto select-none object-contain opacity-50 grayscale transition-all duration-300 hover:opacity-100 hover:grayscale-0 dark:invert"
+                class="h-12 w-auto select-none object-contain opacity-50 brightness-0 transition-all duration-300 hover:opacity-100 dark:invert"
                 draggable="false" />
             </div>
           {{ end }}
         </div>
-        <div data-client-group class="flex items-center gap-20 pr-20" aria-hidden="true">
+        <div data-client-group class="flex items-center gap-64 pr-20" aria-hidden="true">
           {{ range $clientImage := $clientImages }}
             <div class="flex h-6 flex-none items-center justify-center">
               <img
                 src="{{ $clientImage.RelPermalink }}"
                 alt=""
-                class="h-12 w-auto select-none object-contain opacity-50 grayscale transition-all duration-300 hover:opacity-100 hover:grayscale-0 dark:invert"
+                class="h-12 w-auto select-none object-contain opacity-50 brightness-0 transition-all duration-300 hover:opacity-100 dark:invert"
                 draggable="false" />
             </div>
           {{ end }}
