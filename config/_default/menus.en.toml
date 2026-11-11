@@ -30,6 +30,18 @@
   pageRef = "resume"
 
 [[main]]
+  pre = "tools"
+  name = "Tools"
+  weight = 20
+
+[[main]]
+  pre = "notebook"
+  name = "Compress Image"
+  parent = "Tools"
+  weight = 30
+  pageRef = "image-compressor"
+  
+[[main]]
   pre = "newspaper-clipping"
   name = "Blogs"
   weight = 40
